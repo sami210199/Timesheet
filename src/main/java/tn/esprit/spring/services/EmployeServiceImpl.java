@@ -3,6 +3,11 @@ package tn.esprit.spring.services;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +27,8 @@ import tn.esprit.spring.repository.TimesheetRepository;
 @Service
 public class EmployeServiceImpl implements IEmployeService {
 
+	private static final Logger L = LoggerFactory.getLogger(EmployeServiceImpl.class);
+
 	@Autowired
 	EmployeRepository employeRepository;
 	@Autowired
@@ -38,35 +45,61 @@ public class EmployeServiceImpl implements IEmployeService {
 
 	@Override
 	public int addOrUpdateEmploye(Employe employe) {
+		L.info("Start method addOrUpdateEmploye()");
 		employeRepository.save(employe);
 		return employe.getId();
 	}
 
 
 	public void mettreAjourEmailByEmployeId(String email, int employeId) {
-		Employe employe = employeRepository.findById(employeId).get();
-		employe.setEmail(email);
-		employeRepository.save(employe);
+		L.info("Start of method mettreAjourEmailByEmployeId()");
+
+		L.debug("Getting Employee where Id = " + employeId);
+		Optional<Employe> employeOpt = employeRepository.findById(employeId);
+		if (employeOpt.isPresent()) {
+			Employe employe = employeOpt.get();
+			L.debug("Employee Before update = " + employe);
+			employe.setEmail(email);
+			L.debug("Employee Updated.");
+			employeRepository.save(employe);
+			L.debug("Employee  saved.");
+			L.info("End of Method mettreAjourEmailByEmployeId()");
+		}
+		;
 
 	}
 
 	@Transactional	
 	public void affecterEmployeADepartement(int employeId, int depId) {
-		Departement depManagedEntity = deptRepoistory.findById(depId).get();
-		Employe employeManagedEntity = employeRepository.findById(employeId).get();
+		L.info("Start of method affecterEmployeADepartement()");
 
-		if(depManagedEntity.getEmployes() == null){
+		Optional<Departement> depManagedEntityOPT = deptRepoistory.findById(depId);
+		L.debug("Check if Departement exists");
+		if (depManagedEntityOPT.isPresent())
+		{
+			Departement depManagedEntity = depManagedEntityOPT.get();
 
-			List<Employe> employes = new ArrayList<>();
-			employes.add(employeManagedEntity);
-			depManagedEntity.setEmployes(employes);
-		}else{
+			Optional<Employe> employeManagedEntityOPT = employeRepository.findById(employeId);
+			L.debug("Check if Employee exists");
+			if (employeManagedEntityOPT.isPresent())
+			{
+				Employe employeManagedEntity = employeManagedEntityOPT.get();
+				if (depManagedEntity.getEmployes() == null) {
 
-			depManagedEntity.getEmployes().add(employeManagedEntity);
+					List<Employe> employes = new ArrayList<>();
+					employes.add(employeManagedEntity);
+					depManagedEntity.setEmployes(employes);
+				} else {
+
+					depManagedEntity.getEmployes().add(employeManagedEntity);
+				}
+				L.debug("Affect Employee to Departement");
+				deptRepoistory.save(depManagedEntity);
+			}
+
+
 		}
 
-		// à ajouter? 
-		deptRepoistory.save(depManagedEntity); 
 
 	}
 	@Transactional
