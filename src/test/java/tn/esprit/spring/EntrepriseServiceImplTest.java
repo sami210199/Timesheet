@@ -32,44 +32,25 @@ public class EntrepriseServiceImplTest {
     public void testAddEntreprise() {
         Entreprise entreprise = new Entreprise("Vermeg", "boite de developpement");
         Long dataPreTest = entrepriseRepository.count();
-        Entreprise savedEntreprise = entrepriseRepository.save(entreprise);
+        int savedEntrepriseid = iEntrepriseService.ajouterEntreprise(entreprise);
         Long dataAfterTest = entrepriseRepository.count();
         Assert.assertEquals(dataPreTest.intValue(),dataAfterTest - 1);
-        Assert.assertEquals(savedEntreprise.getId(),savedEntreprise.getId());
         l.info("add entreprise : " + entreprise);
-        iEntrepriseService.deleteEntrepriseById(entreprise.getId());
+        iEntrepriseService.deleteEntrepriseById(savedEntrepriseid);
     }
 
-    @Test
-    public void ajouterDepartement() {
-    }
 
-    @Test
-    public void affecterDepartementAEntreprise() {
-    }
-
-    @Test
-    public void getAllDepartementsNamesByEntreprise() {
-    }
 
 
     @Test
     public void testSupprimerEntreprise() {
         Entreprise entreprise = new Entreprise("Vermeg", "boite de developpement");
-        Entreprise savedEntreprise = entrepriseRepository.save(entreprise);
+        int savedEntreprise = iEntrepriseService.ajouterEntreprise(entreprise);
         Long dataPreTest = entrepriseRepository.count();
-        iEntrepriseService.deleteEntrepriseById(savedEntreprise.getId());
+        iEntrepriseService.deleteEntrepriseById(savedEntreprise);
         Long dataAfterTest = entrepriseRepository.count();
         Assert.assertEquals(dataPreTest.intValue(),dataAfterTest + 1);
         l.info(" this entreprise has been deleted : " + entreprise);
     }
 
-
-    @Test
-    public void deleteDepartementById() {
-    }
-
-    @Test
-    public void getEntrepriseById() {
-    }
 }
