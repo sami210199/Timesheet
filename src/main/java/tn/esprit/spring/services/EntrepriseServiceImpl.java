@@ -2,7 +2,10 @@ package tn.esprit.spring.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +17,10 @@ import tn.esprit.spring.repository.EntrepriseRepository;
 
 @Service
 public class EntrepriseServiceImpl implements IEntrepriseService {
+
+	private static final Logger L = LoggerFactory.getLogger(EntrepriseServiceImpl.class);
+
+
 
 	@Autowired
     EntrepriseRepository entrepriseRepoistory;
@@ -66,7 +73,16 @@ public class EntrepriseServiceImpl implements IEntrepriseService {
 
 
 	public Entreprise getEntrepriseById(int entrepriseId) {
-		return entrepriseRepoistory.findById(entrepriseId).get();	
+
+		L.info("Start getEntrepriseById().");
+		L.debug("EntrepriseId   : " + entrepriseId);
+		Optional<Entreprise> e = entrepriseRepoistory.findById(entrepriseId);
+		if(e.isPresent()) {
+			return e.get();
+		}
+		return null;
 	}
 
 }
+
+
