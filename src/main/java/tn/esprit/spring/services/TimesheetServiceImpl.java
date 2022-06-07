@@ -3,8 +3,8 @@ package tn.esprit.spring.services;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,20 +32,26 @@ public class TimesheetServiceImpl implements ITimesheetService {
 	@Autowired
 	EmployeRepository employeRepository;
 	
+	private static final Logger L = Logger.getLogger(TimesheetServiceImpl.class);
+	
 	public int ajouterMission(Mission mission) {
+		L.info("Start ajouterMission().");
+		L.debug("Add Mission : " + mission.getId());
 		missionRepository.save(mission);
+		L.debug("Mission " + mission.getId() + " added.");
+		L.info("End ajouterMission().");
 		return mission.getId();
 	}
     
 	public void affecterMissionADepartement(int missionId, int depId) {
-		Optional <Mission> missionOpt = missionRepository.findById(missionId);
-		Optional<Departement> depOpt = deptRepoistory.findById(depId);
-		if (missionOpt.isPresent() && depOpt.isPresent()) {
-			Mission mission = missionOpt.get();
-			Departement dep = depOpt.get();
-			mission.setDepartement(dep);
-			missionRepository.save(mission);
-		}
+		L.info("Start affecterMissionADepartement().");
+		Mission mission = missionRepository.findById(missionId).get();
+		Departement dep = deptRepoistory.findById(depId).get();
+		L.debug("Affect Departement : " + dep.getId()+" to Mission : "+mission.getId());
+		mission.setDepartement(dep);
+		missionRepository.save(mission);
+		L.debug("Departement " + dep.getId() + " affected.");
+		L.info("End affecterMissionADepartement().");
 	}
 
 	public void ajouterTimesheet(int missionId, int employeId, Date dateDebut, Date dateFin) {
@@ -97,11 +103,15 @@ public class TimesheetServiceImpl implements ITimesheetService {
 
 	
 	public List<Mission> findAllMissionByEmployeJPQL(int employeId) {
+		L.info("Start findAllMissionByEmployeJPQL().");
+		L.debug("EmployeId   : " + employeId);
 		return timesheetRepository.findAllMissionByEmployeJPQL(employeId);
 	}
 
 	
 	public List<Employe> getAllEmployeByMission(int missionId) {
+		L.info("Start getAllEmployeByMission().");
+		L.debug("MissionId   : " + missionId);
 		return timesheetRepository.getAllEmployeByMission(missionId);
 	}
 
