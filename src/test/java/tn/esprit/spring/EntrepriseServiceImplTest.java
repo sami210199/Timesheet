@@ -52,9 +52,18 @@ public class EntrepriseServiceImplTest {
     public void getAllDepartementsNamesByEntreprise() {
     }
 
+
     @Test
-    public void deleteEntrepriseById() {
+    public void testSupprimerEntreprise() {
+        Entreprise entreprise = new Entreprise("Vermeg", "boite de developpement");
+        Entreprise savedEntreprise = entrepriseRepository.save(entreprise);
+        Long dataPreTest = entrepriseRepository.count();
+        iEntrepriseService.deleteEntrepriseById(savedEntreprise.getId());
+        Long dataAfterTest = entrepriseRepository.count();
+        Assert.assertEquals(dataPreTest.intValue(),dataAfterTest + 1);
+        l.info(" this entreprise has been deleted : " + entreprise);
     }
+
 
     @Test
     public void deleteDepartementById() {
