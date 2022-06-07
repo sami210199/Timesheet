@@ -102,18 +102,23 @@ public class EmployeServiceImpl implements IEmployeService {
 
 
 	}
-	@Transactional
+
 	public void desaffecterEmployeDuDepartement(int employeId, int depId)
 	{
-		Departement dep = deptRepoistory.findById(depId).get();
+		L.info("Start of method desaffecterEmployeDuDepartement()");
 
-		int employeNb = dep.getEmployes().size();
-		for(int index = 0; index < employeNb; index++){
-			if(dep.getEmployes().get(index).getId() == employeId){
-				dep.getEmployes().remove(index);
-				break;//a revoir
+		Optional<Departement> dep = deptRepoistory.findById(depId);
+		if(dep.isPresent()) {
+
+			int employeNb = dep.get().getEmployes().size();
+			for (int index = 0; index < employeNb; index++) {
+				if (dep.get().getEmployes().get(index).getId() == employeId) {
+					dep.get().getEmployes().remove(index);
+					break;
+				}
 			}
 		}
+
 	} 
 	
 	// Tablesapce (espace disque) 
@@ -124,11 +129,26 @@ public class EmployeServiceImpl implements IEmployeService {
 	}
 
 	public void affecterContratAEmploye(int contratId, int employeId) {
-		Contrat contratManagedEntity = contratRepoistory.findById(contratId).get();
-		Employe employeManagedEntity = employeRepository.findById(employeId).get();
+		L.info("Start of method affecterContratAEmploye()");
 
-		contratManagedEntity.setEmploye(employeManagedEntity);
-		contratRepoistory.save(contratManagedEntity);
+		Optional<Contrat> contratManagedEntityOPT = contratRepoistory.findById(contratId);
+		L.debug("check if contract exists");
+		if(contratManagedEntityOPT.isPresent())
+		{
+			Contrat contratManagedEntity = contratManagedEntityOPT.get();
+			Optional<Employe> employeManagedEntityOPT = employeRepository.findById(employeId);
+			L.debug("check if employee exists");
+
+			if (employeManagedEntityOPT.isPresent())
+			{
+				Employe employeManagedEntity = employeManagedEntityOPT.get();
+				contratManagedEntity.setEmploye(employeManagedEntity);
+				contratRepoistory.save(contratManagedEntity);
+			}
+
+		}
+		L.info("end of method affecterContratAEmploye()");
+
 
 	}
 
