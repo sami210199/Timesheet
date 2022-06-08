@@ -65,7 +65,6 @@ public class EmployeServiceImpl implements IEmployeService {
 			L.debug("Employee  saved.");
 			L.info("End of Method mettreAjourEmailByEmployeId()");
 		}
-		;
 
 	}
 
@@ -153,27 +152,39 @@ public class EmployeServiceImpl implements IEmployeService {
 	}
 
 	public String getEmployePrenomById(int employeId) {
-		Employe employeManagedEntity = employeRepository.findById(employeId).get();
-		return employeManagedEntity.getPrenom();
+		Optional<Employe> employeeOPT = employeRepository.findById(employeId);
+		if(employeeOPT.isPresent()) {
+			return employeeOPT.get().getPrenom();
+		}
+		else {
+			return null;
+		}
+
 	}
 	 
 	public void deleteEmployeById(int employeId)
 	{
-		Employe employe = employeRepository.findById(employeId).get();
+		Optional<Employe> employeeOPT = employeRepository.findById(employeId);
+		if(employeeOPT.isPresent()) {
+			Employe employe = employeeOPT.get();
+			//Desaffecter l'employe de tous les departements
+			//c'est le bout master qui permet de mettre a jour
+			//la table d'association
+			for (Departement dep : employe.getDepartements()) {
+				dep.getEmployes().remove(employe);
+			}
 
-		//Desaffecter l'employe de tous les departements
-		//c'est le bout master qui permet de mettre a jour
-		//la table d'association
-		for(Departement dep : employe.getDepartements()){
-			dep.getEmployes().remove(employe);
+			employeRepository.delete(employe);
 		}
 
-		employeRepository.delete(employe);
 	}
 
 	public void deleteContratById(int contratId) {
-		Contrat contratManagedEntity = contratRepoistory.findById(contratId).get();
-		contratRepoistory.delete(contratManagedEntity);
+		Optional<Contrat> contratOPT = contratRepoistory.findById(contratId);
+		if(contratOPT.isPresent())
+			contratRepoistory.delete(contratOPT.get());
+
+
 
 	}
 
