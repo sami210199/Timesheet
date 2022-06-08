@@ -178,6 +178,7 @@ public class EmployeServiceImpl implements IEmployeService {
 
 	public void deleteContratById(int contratId) {
 		Optional<Contrat> contratOPT = contratRepoistory.findById(contratId);
+
 		if(contratOPT.isPresent())
 			contratRepoistory.delete(contratOPT.get());
 
