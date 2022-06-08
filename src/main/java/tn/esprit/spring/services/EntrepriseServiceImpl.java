@@ -14,93 +14,69 @@ import tn.esprit.spring.entities.Departement;
 import tn.esprit.spring.entities.Entreprise;
 import tn.esprit.spring.repository.DepartementRepository;
 import tn.esprit.spring.repository.EntrepriseRepository;
+
 @Service
 public class EntrepriseServiceImpl implements IEntrepriseService {
+
 	private static final Logger L = LoggerFactory.getLogger(EntrepriseServiceImpl.class);
+
+
+
 	@Autowired
-	EntrepriseRepository entrepriseRepoistory;
+    EntrepriseRepository entrepriseRepoistory;
 	@Autowired
 	DepartementRepository deptRepoistory;
-
+	
 	public int ajouterEntreprise(Entreprise entreprise) {
-		L.info("Start ajouterEntreprise().");
-		L.debug("Entreprise to save : " + entreprise );
-		L.info("Saving.");
-		entreprise = entrepriseRepoistory.save(entreprise);
-		L.debug("Entreprise saved : " + entreprise );
-		L.info("Returning saved Entreprise");
+		entrepriseRepoistory.save(entreprise);
 		return entreprise.getId();
 	}
 
-	@Override
 	public int ajouterDepartement(Departement dep) {
-		return 0;
+		deptRepoistory.save(dep);
+		return dep.getId();
 	}
-
-
+	
 	public void affecterDepartementAEntreprise(int depId, int entrepriseId) {
-
-		L.info("Start affecterDepartementAEntreprise().");
-		L.debug("Entreprise Id = : " + entrepriseId );
-		L.debug("Get By Id entreprise");
-
-		Optional<Entreprise> entrepriseManagedEntity = entrepriseRepoistory.findById(entrepriseId);
-		if(entrepriseManagedEntity.isPresent()) {
-			Entreprise e = entrepriseManagedEntity.get();
-			L.debug("Entreprise received = " + e);
-
-			L.debug("departement Id = : " + depId);
-			L.debug("Get By Id departement");
-			Optional<Departement> depManagedEntity = deptRepoistory.findById(depId);
-			if (depManagedEntity.isPresent()) {
-				Departement d = depManagedEntity.get();
-				L.debug("departement received = " + d);
-				L.debug("Setting entreprise to departement");
-				d.setEntreprise(e);
-				L.debug("Setting entreprise to departement Done " + d);
-				L.debug("Saving department after Editing ");
-				deptRepoistory.save(d);
-			}
-		}
+		//Le bout Master de cette relation N:1 est departement  
+				//donc il faut rajouter l'entreprise a departement 
+				// ==> c'est l'objet departement(le master) qui va mettre a jour l'association
+				//Rappel : la classe qui contient mappedBy represente le bout Slave
+				//Rappel : Dans une relation oneToMany le mappedBy doit etre du cote one.
+				Entreprise entrepriseManagedEntity = entrepriseRepoistory.findById(entrepriseId).get();
+				Departement depManagedEntity = deptRepoistory.findById(depId).get();
+				
+				depManagedEntity.setEntreprise(entrepriseManagedEntity);
+				deptRepoistory.save(depManagedEntity);
+		
 	}
-
+	
 	public List<String> getAllDepartementsNamesByEntreprise(int entrepriseId) {
-		Optional<Entreprise> entrepriseManagedEntity = entrepriseRepoistory.findById(entrepriseId);
-		if(entrepriseManagedEntity.isPresent()) {
-			Entreprise e = entrepriseManagedEntity.get();
-			List<String> depNames = new ArrayList<>();
-			for (Departement dep : e.getDepartements()) {
-				depNames.add(dep.getName());
-			}
-
-			return depNames;
+		Entreprise entrepriseManagedEntity = entrepriseRepoistory.findById(entrepriseId).get();
+		List<String> depNames = new ArrayList<>();
+		for(Departement dep : entrepriseManagedEntity.getDepartements()){
+			depNames.add(dep.getName());
 		}
-		return null;
+		
+		return depNames;
 	}
 
 	@Transactional
 	public void deleteEntrepriseById(int entrepriseId) {
-		L.info("Start deleteEntrepriseById().");
-		L.debug("Id Entreprise : " + entrepriseId);
-		Optional<Entreprise>  e = entrepriseRepoistory.findById(entrepriseId);
-		if (e.isPresent()) {
-			entrepriseRepoistory.delete(e.get());
-			L.debug("Delete Entreprise " + entrepriseId + " deleted.");
-			L.info("End deleteEntrepriseById().");
-		}
-
+		entrepriseRepoistory.delete(entrepriseRepoistory.findById(entrepriseId).get());	
 	}
 
-	@Override
+	@Transactional
 	public void deleteDepartementById(int depId) {
-
+		deptRepoistory.delete(deptRepoistory.findById(depId).get());	
 	}
 
 
 	public Entreprise getEntrepriseById(int entrepriseId) {
+
 		L.info("Start getEntrepriseById().");
 		L.debug("EntrepriseId   : " + entrepriseId);
-		Optional <Entreprise> e = entrepriseRepoistory.findById(entrepriseId);
+		Optional<Entreprise> e = entrepriseRepoistory.findById(entrepriseId);
 		if(e.isPresent()) {
 			return e.get();
 		}
@@ -108,3 +84,5 @@ public class EntrepriseServiceImpl implements IEntrepriseService {
 	}
 
 }
+
+
