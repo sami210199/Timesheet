@@ -16,4 +16,5 @@ public interface ITimesheetService {
 	public void validerTimesheet(int missionId, int employeId, Date dateDebut, Date dateFin, int validateurId);
 	public List<Mission> findAllMissionByEmployeJPQL(int employeId);
 	public List<Employe> getAllEmployeByMission(int missionId);
+	public void deleteMissionById(int missionId);
 }

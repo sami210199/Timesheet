@@ -16,7 +16,6 @@ import org.springframework.context.annotation.Bean;
 import tn.esprit.spring.config.LoginFilter;
 
 @SpringBootApplication
-@EnableAutoConfiguration
 public class TimesheetApplication {
 
 	public static void main(String[] args) {SpringApplication.run(TimesheetApplication.class, args);}

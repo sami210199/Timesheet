@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,18 +34,20 @@ public class TimesheetServiceImpl implements ITimesheetService {
 	TimesheetRepository timesheetRepository;
 	@Autowired
 	EmployeRepository employeRepository;
-
+	
 	private static final Logger L = LoggerFactory.getLogger(TimesheetServiceImpl.class);
 
-
-
 	public int ajouterMission(Mission mission) {
+		L.info("Start ajouterMission().");
+		L.debug("Add Mission : " + mission.getId());
 		missionRepository.save(mission);
+		L.debug("Mission " + mission.getId() + " added.");
+		L.info("End ajouterMission().");
 		return mission.getId();
 	}
     
 	public void affecterMissionADepartement(int missionId, int depId) {
-		L.info("Start of affecterMissionADepartement().");
+		L.info("Start affecterMissionADepartement().");
 		Optional <Mission> missionOpt = missionRepository.findById(missionId);
 		Optional<Departement> depOpt = deptRepoistory.findById(depId);
 		if (missionOpt.isPresent() && depOpt.isPresent()) {
@@ -54,9 +57,8 @@ public class TimesheetServiceImpl implements ITimesheetService {
 			mission.setDepartement(dep);
 			missionRepository.save(mission);
 			L.debug("Departement " + dep.getId() + " affected.");
-			L.info("End of affecterMissionADepartement().");
+			L.info("End affecterMissionADepartement().");
 		}
-
 	}
 
 	public void ajouterTimesheet(int missionId, int employeId, Date dateDebut, Date dateFin) {
@@ -75,7 +77,8 @@ public class TimesheetServiceImpl implements ITimesheetService {
 
 	
 	public void validerTimesheet(int missionId, int employeId, Date dateDebut, Date dateFin, int validateurId) {
-		System.out.println("start of method validerTimesheet()");
+		L.info("In valider Timesheet");
+
 		Optional<Employe> e = employeRepository.findById(validateurId);
 		if (e.isPresent()) {
 			Employe validateur = e.get();
@@ -84,7 +87,7 @@ public class TimesheetServiceImpl implements ITimesheetService {
 				Mission mission = m.get();
 				//verifier s'il est un chef de departement (interet des enum)
 				if (!validateur.getRole().equals(Role.CHEF_DEPARTEMENT)) {
-					L.info("Employee must be chef de departement to validate a timeSheet");
+					L.info("l'employe doit etre chef de departement pour valider une feuille de temps !");
 					return;
 				}
 				//verifier s'il est le chef de departement de la mission en question
@@ -96,7 +99,7 @@ public class TimesheetServiceImpl implements ITimesheetService {
 					}
 				}
 				if (!chefDeLaMission) {
-					L.info("Employee must be chef de departement in charge of the mission");
+					L.info("l'employe doit etre chef de departement de la mission en question");
 					return;
 				}
 //
@@ -109,17 +112,29 @@ public class TimesheetServiceImpl implements ITimesheetService {
 				L.debug(dateFormat.format(timesheet.getTimesheetPK().getDateDebut()));
 			}
 		}
-
 	}
 
 	
 	public List<Mission> findAllMissionByEmployeJPQL(int employeId) {
+		L.info("Start findAllMissionByEmployeJPQL().");
+		L.debug("EmployeId   : " + employeId);
 		return timesheetRepository.findAllMissionByEmployeJPQL(employeId);
 	}
 
 	
 	public List<Employe> getAllEmployeByMission(int missionId) {
+		L.info("Start getAllEmployeByMission().");
+		L.debug("MissionId   : " + missionId);
 		return timesheetRepository.getAllEmployeByMission(missionId);
+	}
+
+
+	public void deleteMissionById(int missionId) {
+		L.info("Start deleteMissionById().");
+		L.debug("Id mission à supprimer : " + missionId);
+		missionRepository.deleteById(missionId);
+		L.debug("Mission " + missionId + " supprmée.");
+		L.info("End deleteMissionById().");
 	}
 
 }
