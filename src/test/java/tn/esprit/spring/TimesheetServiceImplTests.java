@@ -2,10 +2,8 @@ package tn.esprit.spring;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Assert;
+import org.apache.log4j.Logger;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import tn.esprit.spring.entities.*;
@@ -16,7 +14,6 @@ import tn.esprit.spring.repository.EntrepriseRepository;
 import tn.esprit.spring.services.IEntrepriseService;
 import tn.esprit.spring.repository.MissionRepository;
 import tn.esprit.spring.services.ITimesheetService;
-import tn.esprit.spring.entities.Contrat;
 import tn.esprit.spring.repository.ContratRepository;
 import tn.esprit.spring.services.ContratServiceImpl;
 
@@ -26,7 +23,7 @@ import tn.esprit.spring.services.ContratServiceImpl;
 public class TimesheetServiceImplTests {
 
 
-	private static final Logger l = LoggerFactory.getLogger(TimesheetServiceImplTests.class);
+	private static final Logger l = Logger.getLogger(TimesheetServiceImplTests.class);
 
 	@Autowired
 	DepartementRepository deptRepoistory;

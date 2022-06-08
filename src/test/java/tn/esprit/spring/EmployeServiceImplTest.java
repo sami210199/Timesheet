@@ -1,7 +1,6 @@
 package tn.esprit.spring;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,7 +16,7 @@ import tn.esprit.spring.services.IEmployeService;
 @RunWith(SpringRunner.class)
 public class EmployeServiceImplTest {
 
-    private static final Logger L = LoggerFactory.getLogger(EmployeServiceImpl.class);
+    private static final Logger L = Logger.getLogger(EmployeServiceImpl.class);
 
     @Test
     public void contextLoads() {
